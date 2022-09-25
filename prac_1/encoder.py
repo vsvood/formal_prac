@@ -25,19 +25,19 @@ def decode(text: str) -> StateMachine:
         raise Exception("Format error: begin. Expected '--BEGIN--' line, '%s' found" % lines[3])
     cur_node = None
     for statement in lines[4:]:
-        parsed = statement.split()
-        if parsed[0] == "State:":
+        parsed = statement.split(' ')
+        if parsed[0] == "--END--":
+            break
+        elif parsed[0] == "State:":
             cur_node = parsed[1]
             machine.nodes[cur_node] = Node()
-        elif parsed[0] == "->":
+        elif parsed[4] == "->":
             if cur_node is None:
                 raise Exception("Format error: '->' statement before State declaration")
-            machine.nodes[cur_node].transitions[parsed[1]].add(parsed[2])
-        elif parsed[0] == "--END--":
-            break
+            machine.nodes[cur_node].transitions[parsed[5]].add(parsed[6])
         else:
             raise Exception("Format error: '->' or 'State:' statement expected, '%s' found"
-                            % parsed[0])
+                            % statement)
     return machine
 
 
