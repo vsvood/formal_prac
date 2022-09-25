@@ -1,4 +1,5 @@
 import encoder
+import mutator
 from mutator import split_complex_links, renumber_vertices
 
 
@@ -67,3 +68,43 @@ State: 0
     assert len(machine.nodes[2].transitions) == 1
     assert machine.nodes[2].transitions['b'] == {1, }
 
+
+def test_full_determine():
+    data = """DOA: v1
+Start: 6
+Acceptance: 2 & 5
+--BEGIN--
+State: 0
+    ->  2
+State: 1
+    -> a 0
+State: 2
+    ->  1
+State: 3
+    ->  5
+State: 4
+    -> b 3
+State: 5
+    ->  4
+State: 6
+    ->  2
+    ->  5
+--END--
+"""
+    machine = encoder.decode(data)
+    alpha = {'a', 'b'}
+    machine = mutator.full_determine(machine, alpha)
+    machine = renumber_vertices(machine)
+    assert machine.start_idx == 0
+    assert machine.end_idx == {0, 1, 2}
+    assert len(machine.nodes) == 4
+    for node in machine.nodes.values():
+        assert len(node.transitions) == len(alpha)
+        assert machine.nodes[0].transitions['a'] == {2, }
+        assert machine.nodes[0].transitions['b'] == {1, }
+        assert machine.nodes[1].transitions['a'] == {3, }
+        assert machine.nodes[1].transitions['b'] == {1, }
+        assert machine.nodes[2].transitions['a'] == {2, }
+        assert machine.nodes[2].transitions['b'] == {3, }
+        assert machine.nodes[3].transitions['a'] == {3, }
+        assert machine.nodes[3].transitions['b'] == {3, }

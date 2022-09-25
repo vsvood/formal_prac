@@ -31,6 +31,9 @@ def decode(text: str) -> StateMachine:
         elif parsed[0] == "State:":
             cur_node = parsed[1]
             machine.nodes[cur_node] = Node()
+        elif len(parsed) < 6:
+            raise Exception("Format error: '->' or 'State:' statement expected, '%s' found"
+                            % statement)
         elif parsed[4] == "->":
             if cur_node is None:
                 raise Exception("Format error: '->' statement before State declaration")

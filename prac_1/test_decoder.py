@@ -75,6 +75,19 @@ abobabass
         decode(data)
 
 
+def test_unknown_statement_long():
+    data = """DOA: v1
+Start: 0
+Acceptance: 2
+--BEGIN--
+a b c d e f g h i j k l m n o p
+--END--
+"""
+    with pytest.raises(Exception,
+                       match=r"Format error: '->' or 'State:' statement expected, '.+' found"):
+        decode(data)
+
+
 def test_simple_build():
     data = """DOA: v1
 Start: 0
