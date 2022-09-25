@@ -100,11 +100,17 @@ State: 6
     assert len(machine.nodes) == 4
     for node in machine.nodes.values():
         assert len(node.transitions) == len(alpha)
-        assert machine.nodes[0].transitions['a'] == {2, }
-        assert machine.nodes[0].transitions['b'] == {1, }
-        assert machine.nodes[1].transitions['a'] == {3, }
-        assert machine.nodes[1].transitions['b'] == {1, }
-        assert machine.nodes[2].transitions['a'] == {2, }
-        assert machine.nodes[2].transitions['b'] == {3, }
+        assert (machine.nodes[0].transitions['b'] == {1, }
+                and machine.nodes[1].transitions['a'] == {3, }
+                and machine.nodes[1].transitions['b'] == {1, }
+                and machine.nodes[0].transitions['a'] == {2, }
+                and machine.nodes[2].transitions['b'] == {3, }
+                and machine.nodes[2].transitions['a'] == {2, }) \
+               or (machine.nodes[0].transitions['a'] == {1, }
+                   and machine.nodes[1].transitions['b'] == {3, }
+                   and machine.nodes[1].transitions['a'] == {1, }
+                   and machine.nodes[0].transitions['b'] == {2, }
+                   and machine.nodes[2].transitions['a'] == {3, }
+                   and machine.nodes[2].transitions['b'] == {2, })
         assert machine.nodes[3].transitions['a'] == {3, }
         assert machine.nodes[3].transitions['b'] == {3, }

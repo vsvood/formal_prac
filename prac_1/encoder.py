@@ -28,7 +28,7 @@ def decode(text: str) -> StateMachine:
         parsed = statement.split(' ')
         if parsed[0] == "--END--":
             break
-        elif parsed[0] == "State:":
+        if parsed[0] == "State:":
             cur_node = parsed[1]
             machine.nodes[cur_node] = Node()
         elif len(parsed) < 6:

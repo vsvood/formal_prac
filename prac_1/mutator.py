@@ -1,3 +1,4 @@
+"""This module define functions to apply common operations on state machine"""
 import copy
 from collections import defaultdict
 
