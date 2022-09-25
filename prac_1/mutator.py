@@ -19,3 +19,18 @@ def split_complex_links(machine: StateMachine) -> StateMachine:
                 last_key = translate[new_key]
             result.nodes[last_key].transitions[trigger[-1]].update(node_list)
     return result
+
+
+def renumber_vertices(machine: StateMachine) -> StateMachine:
+    result = StateMachine()
+    translate = defaultdict(lambda: len(result.nodes))
+    for key in machine.nodes:
+        result.nodes[translate[key]] = Node()
+    for key in machine.nodes:
+        new_key = translate[key]
+        for trigger, nodes_list in machine.nodes[key].transitions.items():
+            result.nodes[new_key].transitions[trigger] = \
+                set([translate[x] for x in nodes_list])
+    result.start_idx = translate[machine.start_idx]
+    result.end_idx = set([translate[x] for x in machine.end_idx])
+    return result

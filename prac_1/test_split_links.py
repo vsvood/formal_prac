@@ -1,5 +1,5 @@
 import encoder
-from mutator import split_complex_links
+from mutator import split_complex_links, renumber_vertices
 
 
 def test_simple_split():
@@ -43,3 +43,27 @@ State: 0
     assert len(machine.nodes['1'].transitions) == 0
     assert len(machine.nodes[2].transitions) == 1
     assert machine.nodes[2].transitions['b'] == {'1', }
+
+
+def test_renumber_vertices():
+    data = """DOA: v1
+Start: 0
+Acceptance: 1
+--BEGIN--
+State: 0
+    -> a 1
+    -> ab 1
+--END--
+"""
+    machine = encoder.decode(data)
+    machine = split_complex_links(machine)
+    machine = renumber_vertices(machine)
+    assert machine.start_idx == 0
+    assert machine.end_idx == {1, }
+    assert len(machine.nodes) == 3
+    assert len(machine.nodes[0].transitions) == 1
+    assert machine.nodes[0].transitions['a'] == {1, 2, }
+    assert len(machine.nodes[1].transitions) == 0
+    assert len(machine.nodes[2].transitions) == 1
+    assert machine.nodes[2].transitions['b'] == {1, }
+
