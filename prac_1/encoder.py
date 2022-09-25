@@ -2,7 +2,7 @@
 from state_machine import StateMachine, Node
 
 
-def build_nfa_from_doa(text: str) -> StateMachine:
+def decode(text: str) -> StateMachine:
     """This function build nondeterministic finite-state automata according to the description in
     the doa format"""
     machine = StateMachine()
@@ -41,7 +41,7 @@ def build_nfa_from_doa(text: str) -> StateMachine:
     return machine
 
 
-def convert_nfa_to_doa(machine: StateMachine) -> str:
+def encode(machine: StateMachine) -> str:
     """This function convert nondeterministic finite-state automata to the doa format"""
     res = "DOA: v1\n"
     res += "Start: %s\n" % str(machine.start_idx)

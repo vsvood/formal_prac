@@ -1,5 +1,6 @@
+"""Encoder tests"""
 from state_machine import StateMachine, Node
-from state_machine_utils import convert_nfa_to_doa
+from encoder import encode
 
 
 def test_convert():
@@ -19,4 +20,4 @@ State: 1
 --END--
 """
 
-    assert convert_nfa_to_doa(machine) == data
+    assert encode(machine) == data

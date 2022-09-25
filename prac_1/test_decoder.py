@@ -1,7 +1,7 @@
+"""Decoder tests"""
 import pytest
 
-from state_machine import StateMachine, Node
-from state_machine_utils import build_nfa_from_doa
+from encoder import decode
 
 
 def test_broken_header():
@@ -13,7 +13,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: header\. Expected 'DOA: v1' line, '.+' found"):
-        build_nfa_from_doa(data)
+        decode(data)
 
 
 def test_no_start():
@@ -24,7 +24,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: start\. Expected 'Start:' line, '.+' found"):
-        build_nfa_from_doa(data)
+        decode(data)
 
 
 def test_no_acceptance():
@@ -35,7 +35,7 @@ Start: 0
 """
     with pytest.raises(Exception,
                        match=r"Format error: acceptance\. Expected 'Acceptance:' line, '.+' found"):
-        build_nfa_from_doa(data)
+        decode(data)
 
 
 def test_no_begin():
@@ -46,7 +46,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: begin\. Expected '--BEGIN--' line, '.+' found"):
-        build_nfa_from_doa(data)
+        decode(data)
 
 
 def test_broken_state_block():
@@ -59,7 +59,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: '->' statement before State declaration"):
-        build_nfa_from_doa(data)
+        decode(data)
 
 
 def test_unknown_statement():
@@ -72,7 +72,7 @@ abobabass
 """
     with pytest.raises(Exception,
                        match=r"Format error: '->' or 'State:' statement expected, '.+' found"):
-        build_nfa_from_doa(data)
+        decode(data)
 
 
 def test_simple_build():
@@ -84,7 +84,7 @@ State: 0
     -> a 1
 --END--
 """
-    machine = build_nfa_from_doa(data)
+    machine = decode(data)
 
     assert machine.start_idx == '0'
     assert machine.end_idx == {'1', }
