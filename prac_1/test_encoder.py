@@ -1,5 +1,5 @@
 """Encoder tests"""
-from state_machine import StateMachine, Node
+from state_machine import StateMachine, State
 from encoder import encode
 
 
@@ -7,8 +7,8 @@ def test_convert():
     machine = StateMachine()
     machine.start_idx = {0, }
     machine.end_idx = {1, }
-    machine.nodes[0] = Node({'a': {1, }})
-    machine.nodes[1] = Node()
+    machine.states[0] = State({'a': {1, }})
+    machine.states[1] = State()
 
     data = """DOA: v1
 Start: 0

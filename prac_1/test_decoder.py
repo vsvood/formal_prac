@@ -101,7 +101,7 @@ State: 0
 
     assert machine.start_idx == {'0', }
     assert machine.end_idx == {'1', }
-    assert len(machine.nodes) == 2
-    assert len(machine.nodes['0'].transitions) == 1
-    assert machine.nodes['0'].transitions['a'] == {'1', }
-    assert len(machine.nodes['1'].transitions) == 0
+    assert len(machine.states) == 2
+    assert len(machine.states['0'].links) == 1
+    assert machine.states['0'].links['a'] == {'1', }
+    assert len(machine.states['1'].links) == 0
