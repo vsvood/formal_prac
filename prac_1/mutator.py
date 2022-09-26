@@ -154,12 +154,18 @@ def strong_determine(machine: StateMachine) -> StateMachine:
 def supplement(machine: StateMachine, alpha: set) -> StateMachine:
     """Add missing links from each state to Black Hole state according to specified alpha
     Require machine to have strict-single-letter links"""
-    result = copy.deepcopy(machine)
-    result.nodes["X"] = Node()
+    result = renumber_vertices(machine)
+    new_node = len(result.nodes)
+    added_links = 0
     for letter in alpha:
         for node in result.nodes.values():
             if not node.transitions[letter]:
-                node.transitions[letter] = ("X",)
+                node.transitions[letter] = {new_node, }
+                added_links += 1
+    if added_links:
+        result.nodes[new_node] = Node()
+        for letter in alpha:
+            result.nodes[new_node].transitions[letter] = {new_node, }
     return result
 
 
