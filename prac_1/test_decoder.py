@@ -99,7 +99,7 @@ State: 0
 """
     machine = decode(data)
 
-    assert machine.start_idx == '0'
+    assert machine.start_idx == {'0', }
     assert machine.end_idx == {'1', }
     assert len(machine.nodes) == 2
     assert len(machine.nodes['0'].transitions) == 1

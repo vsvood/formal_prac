@@ -12,14 +12,15 @@ def decode(text: str) -> StateMachine:
     start = lines[1].split()
     if start[0] != "Start:":
         raise Exception("Format error: start. Expected 'Start:' line, '%s' found" % start[0])
-    machine.start_idx = start[1]
-    machine.nodes[start[1]] = Node()
+    machine.start_idx.update(start[1::2])
+    for node in machine.start_idx:
+        machine.nodes[node] = Node()
     acceptance = lines[2].split()
     if acceptance[0] != "Acceptance:":
         raise Exception("Format error: acceptance. Expected 'Acceptance:' line, '%s' found"
                         % acceptance[0])
     machine.end_idx.update(acceptance[1::2])
-    for node in acceptance[1::2]:
+    for node in machine.end_idx:
         machine.nodes[node] = Node()
     if lines[3] != "--BEGIN--":
         raise Exception("Format error: begin. Expected '--BEGIN--' line, '%s' found" % lines[3])
@@ -47,11 +48,11 @@ def decode(text: str) -> StateMachine:
 def encode(machine: StateMachine) -> str:
     """This function convert nondeterministic finite-state automata to the doa format"""
     res = "DOA: v1\n"
-    res += "Start: %s\n" % str(machine.start_idx)
+    res += "Start: %s\n" % " & ".join([str(x) for x in machine.start_idx])
     res += "Acceptance: %s\n" % " & ".join([str(x) for x in machine.end_idx])
     res += "--BEGIN--\n"
     for idx, node in machine.nodes.items():
-        res += "State: %s\n" % idx
+        res += "State: %s\n" % str(idx)
         for trigger, idx_list in node.transitions.items():
             for to_idx in idx_list:
                 res += "    -> %s %s\n" % (trigger, str(to_idx))

@@ -15,4 +15,4 @@ class StateMachine:
     def __init__(self):
         self.nodes = dict()
         self.end_idx = set()
-        self.start_idx = -1
+        self.start_idx = set()

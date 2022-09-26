@@ -34,7 +34,7 @@ def renumber_vertices(machine: StateMachine) -> StateMachine:
         for trigger, nodes_list in machine.nodes[key].transitions.items():
             result.nodes[new_key].transitions[trigger] = \
                 set([translate[x] for x in nodes_list])
-    result.start_idx = translate[machine.start_idx]
+    result.start_idx = set([translate[node] for node in machine.start_idx])
     result.end_idx = set([translate[x] for x in machine.end_idx])
     return result
 
@@ -85,17 +85,19 @@ def drop_eps_links(machine: StateMachine) -> StateMachine:
 
 
 def drop_unreachable_state(machine: StateMachine):
+    # TODO drop states from which end is not acceptable
     """Delete all states that are not reachable from start one"""
-    result = copy.deepcopy(machine)
-    queue = [result.start_idx, ]
+    result = StateMachine()
+    result.start_idx = machine.start_idx
+    queue = list(machine.start_idx)
     processed = defaultdict(lambda: False)
     while queue:
         node = queue.pop()
         if not processed[node]:
-            if node in result.end_idx:
+            if node in machine.end_idx:
                 result.end_idx.add(node)
-            result.nodes[node] = result.nodes[node]
-            for node_list in result.nodes[node].transitions.values():
+            result.nodes[node] = machine.nodes[node]
+            for node_list in machine.nodes[node].transitions.values():
                 for to in node_list:
                     queue.append(to)
             processed[node] = True
@@ -117,32 +119,28 @@ def simplify_machine(machine: StateMachine) -> StateMachine:
 def weak_determine(machine: StateMachine) -> StateMachine:
     """Build deterministic finite automaton.
     Require machine to have strict-single-letter links"""
-    result = copy.deepcopy(machine)
+    result = StateMachine()
     processed = defaultdict(lambda: False)
-    queue = [(result.start_idx,)]
-    result.start_idx = (result.start_idx,)
-    nodes = dict()
-    end_idx = set()
+    result.start_idx = {tuple(sorted(machine.start_idx)), }
+    queue = list(result.start_idx)
     while queue:
         node = queue.pop()
         if not processed[node]:
-            if node not in nodes:
-                nodes[node] = Node()
+            if node not in result.nodes:
+                result.nodes[node] = Node()
                 for sub_node in node:
-                    if sub_node in result.end_idx:
-                        end_idx.add(node)
+                    if sub_node in machine.end_idx:
+                        result.end_idx.add(node)
                 for sub_node in node:
-                    for trigger, node_list in result.nodes[sub_node].transitions.items():
-                        nodes[node].transitions[trigger].update(node_list)
-                for trigger, node_list in nodes[node].transitions.items():
-                    nodes[node].transitions[trigger] = [tuple(sorted(node_list))]
+                    for trigger, node_list in machine.nodes[sub_node].transitions.items():
+                        result.nodes[node].transitions[trigger].update(node_list)
+                for trigger, node_list in result.nodes[node].transitions.items():
+                    result.nodes[node].transitions[trigger] = {tuple(sorted(node_list)), }
 
-            for to_node in nodes[node].transitions.values():
-                if to_node[0] != ():
-                    queue.append(to_node[0])
+            for to_nodes in result.nodes[node].transitions.values():
+                for to_node in to_nodes:
+                    queue.append(to_node)
             processed[node] = True
-    result.nodes = nodes
-    result.end_idx = end_idx
     return result
 
 
@@ -154,9 +152,10 @@ def strong_determine(machine: StateMachine) -> StateMachine:
 
 
 def supplement(machine: StateMachine, alpha: set) -> StateMachine:
-    """Add missing links from each state to Black Hole state according to specified alpha"""
+    """Add missing links from each state to Black Hole state according to specified alpha
+    Require machine to have strict-single-letter links"""
     result = copy.deepcopy(machine)
-    result.nodes["X"] = Node({})
+    result.nodes["X"] = Node()
     for letter in alpha:
         for node in result.nodes.values():
             if not node.transitions[letter]:
@@ -168,4 +167,37 @@ def full_determine(machine: StateMachine, alpha: set) -> StateMachine:
     """Build complete deterministic finite automaton."""
     result = strong_determine(machine)
     result = supplement(result, alpha)
+    return result
+
+
+def reverse(machine: StateMachine) -> StateMachine:
+    """Reverse machine
+    new start states are old end states
+    new end states are old start states
+    links has reversed direction"""
+    result = StateMachine()
+    result.start_idx = set(machine.end_idx)
+    result.end_idx = set(machine.start_idx)
+    for key in machine.nodes:
+        result.nodes[key] = Node()
+    for key, node in machine.nodes.items():
+        for trigger, to_key_list in node.transitions.items():
+            for to_key in to_key_list:
+                result.nodes[to_key].transitions[trigger].add(key)
+    return result
+
+
+def minimize_and_determine(machine: StateMachine, alpha: set) -> StateMachine:
+    """Build minimal complete deterministic finite automaton.
+    Uses Brzozowski's algorithm"""
+    result = simplify_machine(machine)
+    result = reverse(result)
+    result = drop_unreachable_state(result)
+    result = weak_determine(result)
+    result = renumber_vertices(result)
+    result = reverse(result)
+    result = weak_determine(result)
+    result = renumber_vertices(result)
+    result = supplement(result, alpha)
+    result = renumber_vertices(result)
     return result

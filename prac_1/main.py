@@ -25,7 +25,7 @@ if __name__ == '__main__':
     else:
         raise Exception("Unknown format '%s'" % args.input_format)
 
-    machine = mutator.split_complex_links(machine)
+    machine = mutator.minimize_and_determine(machine, {'a', 'b'})
 
     if args.output_format == "doa":
         result = encoder.encode(machine)
