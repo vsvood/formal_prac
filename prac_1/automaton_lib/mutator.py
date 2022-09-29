@@ -2,7 +2,7 @@
 import copy
 from collections import defaultdict
 
-from state_machine import StateMachine, State
+from .state_machine import StateMachine, State
 
 
 def split_complex_links(machine: StateMachine) -> StateMachine:

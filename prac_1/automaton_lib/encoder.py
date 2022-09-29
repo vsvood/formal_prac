@@ -1,5 +1,5 @@
 """This module defines functions to apply changes to state machine"""
-from state_machine import StateMachine, State
+from .state_machine import StateMachine, State
 
 
 def decode(text: str) -> StateMachine:

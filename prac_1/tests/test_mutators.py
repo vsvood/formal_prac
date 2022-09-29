@@ -1,6 +1,5 @@
-import encoder
-import mutator
-from mutator import split_complex_links, renumber_states
+from automaton_lib import encoder, mutator
+from automaton_lib.mutator import split_complex_links, renumber_states
 
 
 def test_simple_split():

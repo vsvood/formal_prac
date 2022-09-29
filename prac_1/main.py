@@ -2,8 +2,7 @@
 import argparse
 import fileinput
 
-import encoder
-import mutator
+from automaton_lib import encoder, mutator
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

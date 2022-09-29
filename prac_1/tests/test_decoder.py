@@ -1,7 +1,7 @@
 """Decoder tests"""
 import pytest
 
-from encoder import decode
+from automaton_lib.encoder import decode
 
 
 def test_broken_header():

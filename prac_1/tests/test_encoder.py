@@ -1,6 +1,6 @@
 """Encoder tests"""
-from state_machine import StateMachine, State
-from encoder import encode
+from automaton_lib.state_machine import StateMachine, State
+from automaton_lib.encoder import encode
 
 
 def test_convert():

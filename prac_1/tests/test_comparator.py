@@ -1,5 +1,4 @@
-import comparator
-import encoder
+from automaton_lib import encoder, comparator
 
 
 def test_isomorphism_used_mismatch():

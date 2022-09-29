@@ -1,8 +1,7 @@
 from collections import defaultdict
 
-import mutator
-from state_machine import StateMachine
-from mutator import minimize_and_determine
+from .state_machine import StateMachine
+from .mutator import minimize_and_determine
 
 
 def check_isomorphism(first: StateMachine, second: StateMachine) -> bool:
