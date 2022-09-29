@@ -14,14 +14,14 @@ State: 0
 """
     machine = encoder.decode(data)
     machine = split_complex_links(machine)
-    assert machine.start_idx == {'0', }
-    assert machine.end_idx == {'1', }
+    assert machine.start_idx == {0, }
+    assert machine.end_idx == {1, }
     assert len(machine.states) == 3
-    assert len(machine.states['0'].links) == 1
-    assert machine.states['0'].links['a'] == {2, }
-    assert len(machine.states['1'].links) == 0
+    assert len(machine.states[0].links) == 1
+    assert machine.states[0].links['a'] == {2, }
+    assert len(machine.states[1].links) == 0
     assert len(machine.states[2].links) == 1
-    assert machine.states[2].links['b'] == {'1', }
+    assert machine.states[2].links['b'] == {1, }
 
 
 def test_merging_split():
@@ -36,14 +36,14 @@ State: 0
 """
     machine = encoder.decode(data)
     machine = split_complex_links(machine)
-    assert machine.start_idx == {'0', }
-    assert machine.end_idx == {'1', }
+    assert machine.start_idx == {0, }
+    assert machine.end_idx == {1, }
     assert len(machine.states) == 3
-    assert len(machine.states['0'].links) == 1
-    assert machine.states['0'].links['a'] == {'1', 2, }
-    assert len(machine.states['1'].links) == 0
+    assert len(machine.states[0].links) == 1
+    assert machine.states[0].links['a'] == {1, 2, }
+    assert len(machine.states[1].links) == 0
     assert len(machine.states[2].links) == 1
-    assert machine.states[2].links['b'] == {'1', }
+    assert machine.states[2].links['b'] == {1, }
 
 
 def test_renumber_states():
