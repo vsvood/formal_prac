@@ -6,18 +6,18 @@ from automaton_lib import encoder, mutator
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', '-i', metavar='<path>', dest='input', help='Path to input file')
+    parser.add_argument('--input', '-i', metavar='<path>', dest='input', help='path to input file')
     parser.add_argument('--input-format', '-if', metavar='<format>', dest='input_format',
                         choices=['doa'], default='doa', help='input file format')
     parser.add_argument('--action', '-A', metavar='<action>', dest='action',
                         choices=['determine', 'full_determine', 'min_determine', 'full_min_determine'],
                         default='full_min_determine', help='action to do with imported automaton')
     parser.add_argument('--alphabet', '-a', metavar='<alpha>', dest='alpha', nargs='+',
-                        default=['a', 'b'], help='action to do with imported automaton')
+                        default=['a', 'b'], help='alphabet, required if full_* action specified')
     parser.add_argument('--output', '-o', metavar='<path>', dest='output',
-                        help='Path to input file')
+                        help='path to output file')
     parser.add_argument('--output-format', '-of', metavar='<format>', dest='output_format',
-                        choices=['doa'], default='doa', help='input file format')
+                        choices=['doa'], default='doa', help='output file format')
     args = parser.parse_args()
 
     if args.input:
