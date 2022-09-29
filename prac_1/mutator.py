@@ -6,25 +6,32 @@ from state_machine import StateMachine, State
 
 
 def split_complex_links(machine: StateMachine) -> StateMachine:
-    """Split multi-letter links to several single-letter"""
+    """Split multi-letter links to several single-letter
+
+    Require: GOOD_NAMING.
+
+    Result satisfies: GOOD_NAMING, SINGLE_LETTER.
+    """
     result = copy.deepcopy(machine)
-    translate = defaultdict(lambda: len(result.states))
     for key, state in machine.states.items():
         for trigger, state_list in state.links.items():
             if len(trigger) < 2:
                 continue
             result.states[key].links.pop(trigger)
             last_key = key
-            for new_key in trigger[:-1]:
-                result.states[last_key].links[new_key].add(translate[new_key])
-                result.states[translate[new_key]] = State()
-                last_key = translate[new_key]
+            for new_trigger in trigger[:-1]:
+                new_key = len(result.states)
+                result.states[last_key].links[new_trigger].add(new_key)
+                result.states[new_key] = State()
+                last_key = new_key
             result.states[last_key].links[trigger[-1]].update(state_list)
-    return result
+    return renumber_states(result)
 
 
-def renumber_vertices(machine: StateMachine) -> StateMachine:
-    """Rename vertices with numbers from 0 to len(machine.states)-1"""
+def renumber_states(machine: StateMachine) -> StateMachine:
+    """Rename states with numbers from 0 to len(machine.states)-1
+
+    Result satisfies: GOOD_NAMING"""
     result = StateMachine()
     translate = defaultdict(lambda: len(result.states))
     for key in machine.states:
@@ -40,7 +47,7 @@ def renumber_vertices(machine: StateMachine) -> StateMachine:
 
 
 def transitive_eps_closure(machine: StateMachine) -> StateMachine:
-    """Build transitive epsilon closure of machine using Floyd-Warshall algorithm"""
+    """Build transitive epsilon closure of machine using Floyd-Warshall algorithm."""
     result = copy.deepcopy(machine)
     for mid_state in result.states:
         for from_state in result.states:
@@ -53,7 +60,7 @@ def transitive_eps_closure(machine: StateMachine) -> StateMachine:
 
 
 def extend_final_states(machine: StateMachine) -> StateMachine:
-    """Add state to final states if one of them is reachable with epsilon link"""
+    """Add state to final states if one of them is reachable with epsilon link."""
     result = copy.deepcopy(machine)
     for first in result.states:
         if "" in result.states[first].links:
@@ -65,7 +72,7 @@ def extend_final_states(machine: StateMachine) -> StateMachine:
 
 def extend_links(machine: StateMachine):
     """Add link A--trigger-->B to machine if in original version
-    A--eps-->C and c--trigger-->B links present"""
+    A--eps-->C and c--trigger-->B links present."""
     result = copy.deepcopy(machine)
     for first in result.states:
         if "" in result.states[first].links:
@@ -77,7 +84,7 @@ def extend_links(machine: StateMachine):
 
 
 def drop_eps_links(machine: StateMachine) -> StateMachine:
-    """Delete all epsilon links"""
+    """Delete all epsilon links."""
     result = copy.deepcopy(machine)
     for state in result.states:
         result.states[state].links.pop("", None)
@@ -86,7 +93,8 @@ def drop_eps_links(machine: StateMachine) -> StateMachine:
 
 def drop_unreachable_state(machine: StateMachine):
     # TODO drop states from which end is not acceptable
-    """Delete all states that are not reachable from start one"""
+    """Delete all states that are not reachable from start one.
+    """
     result = StateMachine()
     result.start_idx = machine.start_idx
     queue = list(machine.start_idx)
@@ -105,8 +113,12 @@ def drop_unreachable_state(machine: StateMachine):
 
 
 def simplify_machine(machine: StateMachine) -> StateMachine:
-    """Prepare machine for determination.
-    Build machine with strict-single-letter links"""
+    """Prepares machine for determination.
+
+    Require: GOOD_NAMING.
+
+    Result satisfies: STRICT_SINGLE_LETTER, GOOD_NAMING.
+    """
     result = split_complex_links(machine)
     result = transitive_eps_closure(result)
     result = extend_final_states(result)
@@ -117,8 +129,12 @@ def simplify_machine(machine: StateMachine) -> StateMachine:
 
 
 def weak_determine(machine: StateMachine) -> StateMachine:
-    """Build deterministic finite automaton.
-    Require machine to have strict-single-letter links"""
+    """Builds deterministic finite automaton.
+
+    Require: STRICT_SINGLE_LETTER
+
+    Result satisfies: STRICT_SINGLE_LETTER, GOOD_NAMING
+    """
     result = StateMachine()
     processed = defaultdict(lambda: False)
     result.start_idx = {tuple(sorted(machine.start_idx)), }
@@ -145,16 +161,25 @@ def weak_determine(machine: StateMachine) -> StateMachine:
 
 
 def strong_determine(machine: StateMachine) -> StateMachine:
-    """Build deterministic finite automaton."""
+    """Build deterministic finite automaton.
+
+    Require: GOOD_NAMING
+
+    Result satisfies: STRICT_SINGLE_LETTER, GOOD_NAMING
+    """
     result = simplify_machine(machine)
     result = weak_determine(result)
     return result
 
 
 def supplement(machine: StateMachine, alpha: set) -> StateMachine:
-    """Add missing links from each state to Black Hole state according to specified alpha
-    Require machine to have strict-single-letter links"""
-    result = renumber_vertices(machine)
+    """Add missing links from each state to Black Hole state according to specified alpha.
+
+    Require: GOOD_NAMING, STRICT_SINGLE_LETTER
+
+    Result satisfies STRICT_SINGLE_LETTER, GOOD_NAMING
+    """
+    result = renumber_states(machine)
     new_state = len(result.states)
     added_links = 0
     for letter in alpha:
@@ -166,11 +191,16 @@ def supplement(machine: StateMachine, alpha: set) -> StateMachine:
         result.states[new_state] = State()
         for letter in alpha:
             result.states[new_state].links[letter] = {new_state, }
-    return result
+    return renumber_states(result)
 
 
 def full_determine(machine: StateMachine, alpha: set) -> StateMachine:
-    """Build complete deterministic finite automaton."""
+    """Build complete deterministic finite automaton.
+
+    Require: GOOD_NAMING
+
+    Result satisfies: STRICT_SINGLE_LETTER, GOOD_NAMING
+    """
     result = strong_determine(machine)
     result = supplement(result, alpha)
     return result
@@ -195,14 +225,15 @@ def reverse(machine: StateMachine) -> StateMachine:
 
 def minimize_and_determine(machine: StateMachine) -> StateMachine:
     """Build minimal complete deterministic finite automaton.
-    Uses Brzozowski's algorithm"""
+    Uses Brzozowski's algorithm
+
+    Require: GOOD_NAMING"""
     result = simplify_machine(machine)
     result = reverse(result)
     result = drop_unreachable_state(result)
     result = weak_determine(result)
-    result = renumber_vertices(result)
+    result = renumber_states(result)
     result = reverse(result)
     result = weak_determine(result)
-    result = renumber_vertices(result)
-    result = renumber_vertices(result)
+    result = renumber_states(result)
     return result

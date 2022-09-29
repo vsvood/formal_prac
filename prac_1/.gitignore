@@ -5,4 +5,4 @@ venv
 .coverage
 .pytest_cache
 
-test
+test/tmp

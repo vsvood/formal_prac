@@ -1,6 +1,6 @@
 import encoder
 import mutator
-from mutator import split_complex_links, renumber_vertices
+from mutator import split_complex_links, renumber_states
 
 
 def test_simple_split():
@@ -46,7 +46,7 @@ State: 0
     assert machine.states[2].links['b'] == {'1', }
 
 
-def test_renumber_vertices():
+def test_renumber_states():
     data = """DOA: v1
 Start: 0
 Acceptance: 1
@@ -58,7 +58,7 @@ State: 0
 """
     machine = encoder.decode(data)
     machine = split_complex_links(machine)
-    machine = renumber_vertices(machine)
+    machine = renumber_states(machine)
     assert machine.start_idx == {0, }
     assert machine.end_idx == {1, }
     assert len(machine.states) == 3
@@ -75,26 +75,26 @@ Start: 6
 Acceptance: 2 & 5
 --BEGIN--
 State: 0
-    ->  2
+    -> EPS 2
 State: 1
     -> a 0
 State: 2
-    ->  1
+    -> EPS 1
 State: 3
-    ->  5
+    -> EPS 5
 State: 4
     -> b 3
 State: 5
-    ->  4
+    -> EPS 4
 State: 6
-    ->  2
-    ->  5
+    -> EPS 2
+    -> EPS 5
 --END--
 """
     machine = encoder.decode(data)
     alpha = {'a', 'b'}
     machine = mutator.full_determine(machine, alpha)
-    machine = renumber_vertices(machine)
+    machine = renumber_states(machine)
     assert machine.start_idx == {0, }
     assert machine.end_idx == {0, 1, 2}
     assert len(machine.states) == 4

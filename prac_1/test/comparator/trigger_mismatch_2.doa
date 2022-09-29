@@ -1,0 +1,11 @@
+DOA: v1
+Start: 0
+Acceptance: 2
+--BEGIN--
+State: 0
+    -> a 0
+    -> b 1
+State: 1
+    -> a 2
+State: 2
+--END--
