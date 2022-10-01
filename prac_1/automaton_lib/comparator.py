@@ -35,7 +35,7 @@ def check_isomorphism(first: StateMachine, second: StateMachine) -> bool:
         if translate[state] not in second.end_idx:
             return False
     for state in second.end_idx:
-        if translate[state] not in first.end_idx:
+        if rtranslate[state] not in first.end_idx:
             return False
     return True
 
