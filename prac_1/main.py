@@ -8,7 +8,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', '-i', metavar='<path>', dest='input', help='path to input file')
     parser.add_argument('--input-format', '-if', metavar='<format>', dest='input_format',
-                        choices=["doa"], default="doa", help='input file format')
+                        choices=["doa", "regexp"], default="doa", help='input file format')
     parser.add_argument('--action', '-A', metavar='<action>', dest='action',
                         choices=['reformat', 'determine', 'full_determine', 'min_determine', 'full_min_determine'],
                         default='reformat', help='action to do with imported automaton')

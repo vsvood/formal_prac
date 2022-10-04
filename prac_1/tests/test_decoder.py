@@ -1,6 +1,7 @@
 """Decoder tests"""
 import pytest
 
+from automaton_lib.comparator import check_equality
 from automaton_lib.encoder import decode
 
 
@@ -110,3 +111,72 @@ State: 0
     assert len(machine.states['0'].links) == 1
     assert machine.states['0'].links['a'] == {'1', }
     assert len(machine.states['1'].links) == 0
+
+
+def test_single_token():
+    data = "DOA: v1\n" \
+           "Start: 0\n" \
+           "Acceptance: 1\n" \
+           "--BEGIN--\n" \
+           "State: 0\n" \
+           "  -> aa 1\n" \
+           "--END--\n"
+    assert check_equality(decode("aa", "regexp"), decode(data, "doa"))
+
+
+def test_plus():
+    data = "DOA: v1\n" \
+           "Start: 0\n" \
+           "Acceptance: 1 & 2\n" \
+           "--BEGIN--\n" \
+           "State: 0\n" \
+           "  -> a 1\n" \
+           "  -> b 2\n" \
+           "--END--\n"
+    assert check_equality(decode("a+b", "regexp"), decode(data, "doa"))
+
+
+def test_mul():
+    data = "DOA: v1\n" \
+           "Start: 0\n" \
+           "Acceptance: 1\n" \
+           "--BEGIN--\n" \
+           "State: 0\n" \
+           "  -> ab 1\n" \
+           "--END--\n"
+    assert check_equality(decode("a*b", "regexp"), decode(data, "doa"))
+
+
+def test_kleene_plus():
+    data = "DOA: v1\n" \
+           "Start: 0\n" \
+           "Acceptance: 1\n" \
+           "--BEGIN--\n" \
+           "State: 0\n" \
+           "  -> a 1\n" \
+           "State: 1\n" \
+           "  -> a 1\n" \
+           "--END--\n"
+    assert check_equality(decode("a^+", "regexp"), decode(data, "doa"))
+
+
+def test_kleene_star():
+    data = "DOA: v1\n" \
+           "Start: 0\n" \
+           "Acceptance: 0\n" \
+           "--BEGIN--\n" \
+           "State: 0\n" \
+           "  -> a 0\n" \
+           "--END--\n"
+    assert check_equality(decode("a^*", "regexp"), decode(data, "doa"))
+
+
+def test_digit_degree():
+    data = "DOA: v1\n" \
+           "Start: 0\n" \
+           "Acceptance: 1\n" \
+           "--BEGIN--\n" \
+           "State: 0\n" \
+           "  -> aaaaa 1\n" \
+           "--END--\n"
+    assert check_equality(decode("a^5", "regexp"), decode(data, "doa"))

@@ -1,4 +1,5 @@
 """This module defines functions to apply changes to state machine"""
+from .regexp_utils import regexp_to_rpn
 from .state_machine import StateMachine, State
 
 
@@ -6,6 +7,8 @@ def decode(data: str, format: str) -> StateMachine:
     """This function build nondeterministic finite-state automata according to the description"""
     if format == "doa":
         return decode_doa(data)
+    elif format == "regexp":
+        return decode_regexp(data)
     else:
         raise Exception("Unknown format '%s'" % format)
 
@@ -52,6 +55,26 @@ def decode_doa(text: str) -> StateMachine:
             raise Exception("Format error: '->' or 'State:' statement expected, '%s' found"
                             % statement)
     return machine
+
+
+def decode_regexp(text: str) -> StateMachine:
+    rpn = regexp_to_rpn(text)
+    stack = []
+    for token in rpn:
+        if token.isalpha() or token == "":
+            stack.append(StateMachine(token))
+        elif token == "|":
+            machine = stack.pop()
+            machine1 = stack.pop()
+            stack.append(machine1 + machine)
+        elif token == "&":
+            machine = stack.pop()
+            stack[-1] *= machine
+        elif token in ["+", "*"] or token.isdigit():
+            stack[-1] **= token
+        else:
+            raise Exception("Unknown token " + token)
+    return stack.pop()
 
 
 def encode(machine: StateMachine, format: str) -> str:
