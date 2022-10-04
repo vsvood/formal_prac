@@ -5,6 +5,7 @@ from collections import defaultdict
 
 class State:
     """This class represent State Machine node structure"""
+
     def __init__(self, links: dict = None):
         if links is None:
             links = {}
@@ -13,6 +14,7 @@ class State:
 
 class StateMachine:
     """This class represents State Machine structure"""
+
     def __init__(self, token: str = None):
         self.states = dict()
         if token is None:

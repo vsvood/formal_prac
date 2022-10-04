@@ -63,4 +63,3 @@ def test_equality_success_1():
     with open("test/comparator/output.doa", 'r') as f:
         machine_2 = encoder.decode(f.read(), "doa")
     assert comparator.check_equality(machine_1, machine_2)
-

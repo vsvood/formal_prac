@@ -1,4 +1,5 @@
 """This module defines functions to apply changes to state machine"""
+from .mutator import renumber_states
 from .regexp_utils import regexp_to_rpn
 from .state_machine import StateMachine, State
 
@@ -14,7 +15,7 @@ def decode(data: str, format: str) -> StateMachine:
 
 
 def decode_doa(text: str) -> StateMachine:
-    """This function build nondeterministic finite-state automata according to the description in
+    """This function build finite-state automata according to the description in
     the doa format"""
     machine = StateMachine()
     lines = text.split('\n')
@@ -58,6 +59,7 @@ def decode_doa(text: str) -> StateMachine:
 
 
 def decode_regexp(text: str) -> StateMachine:
+    """This function build finite-state automata according to regexp"""
     rpn = regexp_to_rpn(text)
     stack = []
     for token in rpn:
@@ -78,6 +80,7 @@ def decode_regexp(text: str) -> StateMachine:
 
 
 def encode(machine: StateMachine, format: str) -> str:
+    """This function convert finite-state automata to format"""
     if format == "doa":
         return encode_doa(machine)
     elif format == "graphviz":
@@ -87,7 +90,8 @@ def encode(machine: StateMachine, format: str) -> str:
 
 
 def encode_doa(machine: StateMachine) -> str:
-    """This function convert nondeterministic finite-state automata to the doa format"""
+    """This function convert finite-state automata to the doa format"""
+    machine = renumber_states(machine)
     res = "DOA: v1\n"
     res += "Start: %s\n" % " & ".join([str(x) for x in machine.start_idx])
     res += "Acceptance: %s\n" % " & ".join([str(x) for x in machine.end_idx])
@@ -102,6 +106,7 @@ def encode_doa(machine: StateMachine) -> str:
 
 
 def encode_graphviz(machine: StateMachine) -> str:
+    """This function convert finite-state automata to the graphviz format"""
     res = "digraph {\n"
     res += "  rankdir=LR\n"
     for idx in machine.start_idx:
