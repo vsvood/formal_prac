@@ -11,7 +11,7 @@ State: 0
     -> ab 1
 --END--
 """
-    machine = encoder.decode(data)
+    machine = encoder.decode(data, "doa")
     machine = split_complex_links(machine)
     assert machine.start_idx == {0, }
     assert machine.end_idx == {1, }
@@ -33,7 +33,7 @@ State: 0
     -> ab 1
 --END--
 """
-    machine = encoder.decode(data)
+    machine = encoder.decode(data, "doa")
     machine = split_complex_links(machine)
     assert machine.start_idx == {0, }
     assert machine.end_idx == {1, }
@@ -67,7 +67,7 @@ State: 6
     -> EPS 5
 --END--
 """
-    machine = encoder.decode(data)
+    machine = encoder.decode(data, "doa")
     alpha = {'a', 'b'}
     machine = mutator.full_determine(machine, alpha)
     machine = renumber_states(machine)
@@ -110,7 +110,7 @@ State: 2
     -> b 3
 --END--
 """
-    machine = encoder.decode(data)
+    machine = encoder.decode(data, "doa")
     alpha = {'a', 'b'}
     machine = mutator.minimize_and_determine(machine)
     assert machine.start_idx == {0, }

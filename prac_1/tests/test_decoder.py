@@ -4,6 +4,11 @@ import pytest
 from automaton_lib.encoder import decode
 
 
+def test_bad_format():
+    with pytest.raises(Exception, match=r"Unknown format '.+'"):
+        decode("", "abracadabra")
+
+
 def test_broken_header():
     data = """XXX
 Start: 0
@@ -13,7 +18,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: header\. Expected 'DOA: v1' line, '.+' found"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_no_start():
@@ -24,7 +29,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: start\. Expected 'Start:' line, '.+' found"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_no_acceptance():
@@ -35,7 +40,7 @@ Start: 0
 """
     with pytest.raises(Exception,
                        match=r"Format error: acceptance\. Expected 'Acceptance:' line, '.+' found"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_no_begin():
@@ -46,7 +51,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: begin\. Expected '--BEGIN--' line, '.+' found"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_broken_state_block():
@@ -59,7 +64,7 @@ Acceptance: 2
 """
     with pytest.raises(Exception,
                        match=r"Format error: '->' statement before State declaration"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_unknown_statement():
@@ -72,7 +77,7 @@ abobabass
 """
     with pytest.raises(Exception,
                        match=r"Format error: '->' or 'State:' statement expected, '.+' found"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_unknown_statement_long():
@@ -85,7 +90,7 @@ a b c d e f g h i j k l m n o p
 """
     with pytest.raises(Exception,
                        match=r"Format error: '->' or 'State:' statement expected, '.+' found"):
-        decode(data)
+        decode(data, "doa")
 
 
 def test_simple_build():
@@ -97,7 +102,7 @@ State: 0
     -> a 1
 --END--
 """
-    machine = decode(data)
+    machine = decode(data, "doa")
 
     assert machine.start_idx == {'0', }
     assert machine.end_idx == {'1', }

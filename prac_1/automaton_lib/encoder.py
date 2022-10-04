@@ -2,7 +2,15 @@
 from .state_machine import StateMachine, State
 
 
-def decode(text: str) -> StateMachine:
+def decode(data: str, format: str) -> StateMachine:
+    """This function build nondeterministic finite-state automata according to the description"""
+    if format == "doa":
+        return decode_doa(data)
+    else:
+        raise Exception("Unknown format '%s'" % format)
+
+
+def decode_doa(text: str) -> StateMachine:
     """This function build nondeterministic finite-state automata according to the description in
     the doa format"""
     machine = StateMachine()
@@ -46,7 +54,16 @@ def decode(text: str) -> StateMachine:
     return machine
 
 
-def encode(machine: StateMachine) -> str:
+def encode(machine: StateMachine, format: str) -> str:
+    if format == "doa":
+        return encode_doa(machine)
+    elif format == "graphviz":
+        return encode_graphviz(machine)
+    else:
+        raise Exception("Unknown format '%s'" % format)
+
+
+def encode_doa(machine: StateMachine) -> str:
     """This function convert nondeterministic finite-state automata to the doa format"""
     res = "DOA: v1\n"
     res += "Start: %s\n" % " & ".join([str(x) for x in machine.start_idx])
@@ -58,4 +75,19 @@ def encode(machine: StateMachine) -> str:
             for to_idx in idx_list:
                 res += "    -> %s %s\n" % (trigger if trigger != "" else "EPS", str(to_idx))
     res += "--END--\n"
+    return res
+
+
+def encode_graphviz(machine: StateMachine) -> str:
+    res = "digraph {\n"
+    res += "  rankdir=LR\n"
+    for idx in machine.start_idx:
+        res += "  \"%s\" [color=green]\n" % str(idx)
+    for idx in machine.end_idx:
+        res += "  \"%s\" [style=filled, fillcolor=red]\n" % str(idx)
+    for at, state in machine.states.items():
+        for trigger, idx_list in state.links.items():
+            for to in idx_list:
+                res += "  \"%s\" -> \"%s\" [label=\"%s\"]\n" % (str(at), str(to), str(trigger))
+    res += "}\n"
     return res
