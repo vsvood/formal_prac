@@ -1,0 +1,7 @@
+DOA: v1
+Start: 0
+Acceptance: 0
+--BEGIN--
+State: 0
+    -> a 0
+--END--
