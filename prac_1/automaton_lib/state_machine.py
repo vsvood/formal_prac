@@ -84,3 +84,12 @@ class StateMachine:
             return self.power(int(power))
         else:
             raise Exception("bad power " + power)
+
+    def __invert__(self):
+        result = copy.deepcopy(self)
+        new_end = set()
+        for node in result.nodes:
+            if node not in result.end_idx:
+                new_end.add(node)
+        result.end_idx = new_end
+        return result
