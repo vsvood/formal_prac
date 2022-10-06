@@ -1,6 +1,7 @@
 """This module is responsible for cli interface"""
 import argparse
 import fileinput
+import sys
 
 from automaton_lib import encoder, mutator
 
@@ -24,7 +25,7 @@ if __name__ == '__main__':
         with open(args.input, 'r') as f:
             data = f.read()
     else:
-        data = ''.join(fileinput.input())
+        data = ''.join(sys.stdin.readlines())
 
     machine = encoder.decode(data, args.input_format)
 
