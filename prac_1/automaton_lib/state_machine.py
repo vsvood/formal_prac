@@ -88,8 +88,8 @@ class StateMachine:
     def __invert__(self):
         result = copy.deepcopy(self)
         new_end = set()
-        for node in result.nodes:
-            if node not in result.end_idx:
-                new_end.add(node)
+        for state in result.states:
+            if state not in result.end_idx:
+                new_end.add(state)
         result.end_idx = new_end
         return result
