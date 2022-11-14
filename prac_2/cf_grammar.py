@@ -40,19 +40,25 @@ class CFGrammar:
         rel = [rule.split('->') for rule in lines if rule != ""]
 
         if self.start is None:
-            self.start = rel[0][0]
+            if len(rel) > 0:
+                if len(rel[0]) > 0:
+                    self.start = rel[0][0]
+                else:
+                    raise Exception("bad variable ''")
 
-        for non_t, rule_set in rel:
-            if self.var and non_t not in self.var:
-                raise Exception("unknown variable %s" % non_t)
+        for key, rule_set in rel:
+            if key == "":
+                raise Exception("bad variable ''")
+            if self.var and key not in self.var:
+                raise Exception("unknown variable %s" % key)
 
             rule_set = {tuple(rule.split(" ")) for rule in rule_set.split("|")}
             self.__check_rule_set(rule_set)
 
-            if non_t not in self.rel:
-                self.rel[non_t] = rule_set
+            if key not in self.rel:
+                self.rel[key] = rule_set
             else:
-                self.rel[non_t].update(rule_set)
+                self.rel[key].update(rule_set)
 
         self.__guess_missing()
 

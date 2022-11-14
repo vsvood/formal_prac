@@ -57,7 +57,8 @@ def drop_unreachable(grammar: CFGrammar) -> CFGrammar:
                 if char.isupper() and char not in reachable:
                     dfs(char)
 
-    dfs(grammar.start)
+    if grammar.start in grammar.rel:
+        dfs(grammar.start)
     new_grammar = CFGrammar()
     new_grammar.start = grammar.start
     for key in reachable:
@@ -70,12 +71,13 @@ def get_generator(grammar: CFGrammar, token: str) -> str:
         if rule_set == {(token,), }:
             return key
     generator = token.upper()
-    if generator not in grammar.rel:
+    if generator not in grammar.var and generator not in grammar.alpha:
         return generator
     idx = 1
-    while generator+"_"+str(idx) in grammar.rel:
+    while generator + "_" + str(idx) in grammar.var or \
+            generator + "_" + str(idx) in grammar.alpha:
         idx += 1
-    return generator+"_"+str(idx)
+    return generator + "_" + str(idx)
 
 
 def fix_rule_set(rule_set: set[tuple[str]], token: str, token_gen: str) -> set[tuple[str]]:
@@ -108,4 +110,3 @@ def fix_mixed_rules(grammar: CFGrammar) -> CFGrammar:
     new_grammar.rel = rel
 
     return new_grammar
-        
