@@ -1,8 +1,8 @@
 S->A B|
-A->A_1 A|B_1 B
+A->(A) A|(B) B
 B->C D
 C->c
-D->D_1 D|D_1
-A_1->a
-B_1->b
-D_1->d
+D->(D) D|(D)
+(A)->a
+(B)->b
+(D)->d

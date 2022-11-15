@@ -36,3 +36,75 @@ def test_fix_mixed_rules_1():
         out_grammar = CFGrammar(f.read())
     in_grammar = mutator.fix_mixed_rules(in_grammar)
     assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_drop_non_gen_1():
+    with open("mutators/greetings_non_gen_in") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/greetings_unreachable_in") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.drop_non_gen(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_drop_unreachable_1():
+    with open("mutators/greetings_unreachable_in") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/greetings_mixed_in") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.drop_unreachable(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_fix_mixed_rules_2():
+    with open("mutators/greetings_mixed_in") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/greetings_long_in") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.fix_mixed_rules(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_fix_long_rules():
+    with open("mutators/greetings_long_in") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/greetings_eps_in") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.fix_long_rules(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_fix_eps_rules():
+    with open("mutators/greetings_eps_in") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/greetings_single_in") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.fix_eps_rules(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_fix_eps_rules_1():
+    with open("mutators/eps_in_1") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/eps_out_1") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.fix_eps_rules(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_fix_eps_rules_2():
+    with open("mutators/eps_in_2") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/eps_out_2") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.fix_eps_rules(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)
+
+
+def test_fix_single_rules():
+    with open("mutators/single_in_1") as f:
+        in_grammar = CFGrammar(f.read())
+    with open("mutators/single_out_2") as f:
+        out_grammar = CFGrammar(f.read())
+    in_grammar = mutator.fix_single_rules(in_grammar)
+    assert (out_grammar.rel == in_grammar.rel)

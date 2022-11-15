@@ -87,3 +87,12 @@ class CFGrammar:
                     if token not in self.var and token != "":
                         self.alpha.add(token)
 
+    def __str__(self):
+        return "$VARIABLES: " + \
+               " ".join(self.var) + "\n" + \
+               "$ALPHABET: " + \
+               " ".join(self.alpha) + "\n" + \
+               "$START: " + \
+               str(self.start) + "\n" + \
+               "\n".join([key + "->" + "|".join([" ".join(rule) for rule in rule_set])
+                          for key, rule_set in self.rel.items()])
