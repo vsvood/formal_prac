@@ -1,0 +1,11 @@
+$VARIABLES: S A B C D E F G
+$ALPHABET: a b c d e f g
+$START: S
+S->A B|E F|
+A->a A|b B
+B->C D
+C->c
+D->d D|d
+E->e E
+F->G E
+G->g
